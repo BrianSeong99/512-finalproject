@@ -15,7 +15,7 @@ GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
 GPIO.setup(GPIO_ECHO, GPIO.IN)
 
 # LED strip configuration:
-LED_COUNT = 100        # Number of LED pixels.
+LED_COUNT = 150        # Number of LED pixels.
 LED_PIN = 19          # GPIO pin connected to the pixels (18 uses PWM!).
 # LED_PIN = 10        # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -30,6 +30,15 @@ def colorWipe(strip, color, wait_ms=50):
     """Wipe color across display a pixel at a time."""
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
+        strip.show()
+        time.sleep(wait_ms / 1000.0)
+
+def rainbowCycle(strip, wait_ms=20, iterations=5):
+    """Draw rainbow that uniformly distributes itself across all pixels."""
+    for j in range(256 * iterations):
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, wheel(
+                (int(i * 256 / strip.numPixels()) + j) & 255))
         strip.show()
         time.sleep(wait_ms / 1000.0)
 
@@ -75,9 +84,7 @@ if __name__ == '__main__':
             dist = distance()
             if dist < 20 and dist > 2:
                 print('on')
-                colorWipe(strip, Color(255, 0, 0))  # Red wipe
-                colorWipe(strip, Color(0, 255, 0))  # Green wipe
-                colorWipe(strip, Color(0, 0, 255))  # Blue wipe
+                rainbowCycle(strip, 10, 5)
             else:
                 print('off')
                 colorWipe(strip, Color(0, 0, 0), 10)  # Red wipe
